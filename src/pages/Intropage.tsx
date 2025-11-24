@@ -32,7 +32,7 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
           I AM CHEF 🧑‍🍳
         </h1>
         <p className="text-lg text-purple-600 font-medium mt-2">
-          Ricette smart. Senza stress. 😎🔥
+          Smart recipes. No stress. 😎🔥
         </p>
       </section>
 
@@ -40,22 +40,22 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
       <section className="w-full max-w-sm backdrop-blur-xl bg-white/80 border border-purple-200 rounded-3xl shadow-xl p-6">
 
         <h2 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
-          🔑 Configura API
+          🔑 Setup API
         </h2>
 
         {/* LABEL */}
         <label className="block text-sm font-semibold text-purple-700 mb-2">
-          Inserisci la tua chiave Spoonacular
+          Enter your Spoonacular API Key
         </label>
 
-        {/* INPUT + OCCHIO + RESET */}
+        {/* INPUT + SHOW/HIDE + RESET */}
         <div className="relative flex items-center">
           <input
             type={showKey ? "text" : "password"}
             value={inputApiKey}
             onChange={(e) => setInputApiKey(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Scrivi qui la tua API Key..."
+            placeholder="Type your API key here..."
             className="w-full px-4 py-3 rounded-lg bg-purple-50 border-2 border-purple-300 focus:ring-4 focus:ring-purple-200 focus:border-purple-700 transition-all outline-none text-purple-900 font-semibold placeholder-purple-400"
           />
 
@@ -83,28 +83,28 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
         {/* FEEDBACK */}
         {apiKey && (
           <p className="text-sm text-purple-600 font-medium mt-3 flex items-center gap-2">
-            ✅ Chiave salvata con successo
+            ✅ Key saved successfully
           </p>
         )}
 
-        {/* BUTTON SALVA */}
+        {/* SAVE BUTTON */}
         <button
           onClick={handleSaveApiKey}
           className="mt-5 w-full py-3 px-4 bg-purple-700 hover:bg-purple-800 active:bg-purple-900 text-white font-bold rounded-xl shadow-md active:scale-95 transition-all flex justify-center items-center gap-2"
         >
-          🧩 Entra
+          🧩 Enter
         </button>
 
         {/* LINK */}
         <p className="text-xs text-gray-600 mt-5 text-center">
-          Non possiedi una key?{" "}
+          Don’t have a key?{" "}
           <a
             href="https://spoonacular.com/food-api"
             target="_blank"
             rel="noopener noreferrer"
             className="text-purple-700 font-bold hover:underline"
           >
-            Ottienila qui
+            Get it here
           </a>
         </p>
       </section>

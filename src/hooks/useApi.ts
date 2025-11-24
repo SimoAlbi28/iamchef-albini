@@ -68,5 +68,18 @@ export const getIngredientURL= (query: string, apiKey: string) =>{
     return `${import.meta.env.VITE_BASE_URL}${ENDPOINT}?apiKey=${apiKey}&query=${query}&number=${RESULT_NUM}`;//qua
 }
 
+/**
+ * Funzione di helper per costruire l’URL della chiamata API per la ricerca degli ingredienti.
+ * @param query stringa di ricerca
+ * @returns URL completo per la chiamata API
+ */
+
+export const getRecipesURL= (ingredients: string, apiKey: string) =>{
+    const ENDPOINT= "/recipes/findByIngredients";
+    const RESULT_NUM= 10;
+    return `${import.meta.env.VITE_BASE_URL}${ENDPOINT}?apiKey=${apiKey}&ingredients=${ingredients}&number=${RESULT_NUM}`;//qua
+}
+
+
 export default useApi
 

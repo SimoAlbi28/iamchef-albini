@@ -1,34 +1,34 @@
-import React from 'react'
+import React from 'react';
 
 interface LayoutProps {
-  header?: React.ReactNode
-  main?: React.ReactNode
-  footer?: React.ReactNode
+  header?: React.ReactNode;
+  main?: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
 function Layout({ header, main, footer }: LayoutProps) {
   return (
-    <main className="w-screen max-w-96 h-screen flex flex-col mx-auto bg-gradient-to-b from-purple-900 via-purple-800 to-purple-700 text-purple-100">
+    <main className="w-screen max-w-96 h-screen flex flex-col mx-auto bg-gradient-to-b from-purple-950 via-purple-950 to-purple-900 text-purple-100">
       
-      {/* Header */}
+      {/* Header section */}
       <header className="mb-6 shrink-0">
         {header}
       </header>
 
-      {/* Contenuto principale */}
+      {/* Main content section */}
       <section className="w-full flex-1 flex justify-center items-start min-h-0 p-4">
         {main}
       </section>
 
-      {/* Footer */}
+      {/* Footer section */}
       {footer && (
-        <footer className="mt-4 p-4 text-center text-purple-200 border-t border-purple-600">
+        <footer className="mt-4 p-4 text-center text-purple-200 border-t border-purple-700">
           {footer}
         </footer>
       )}
 
     </main>
-  )
+  );
 }
 
-export default Layout
+export default Layout;

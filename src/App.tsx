@@ -11,6 +11,9 @@ import Footer from './components/Footer'
 import Intropage from "./pages/Intropage.tsx"
 
 function App() {
+
+  //TO-DO: al clic di dicover recipe btn devi ottenere l'url tramite getRecipesUrl e fare la chiamata API tramite l'hooks di useApi
+
   // ========== STATI GLOBALI ==========
   // Gestisce la pagina attualmente visualizzata (homepage, discover-recipes, recipe-details)
   const [currentPage, setCurrentPage] = useState<currentPage>({currentPage: {page: "Intropage"}})

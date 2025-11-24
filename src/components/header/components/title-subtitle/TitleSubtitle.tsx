@@ -1,19 +1,19 @@
 export default function Titlesubtitle() {
-  // ========== COMPONENTE TITLESUBTITLE ==========  
-  // Mostra il logo e una descrizione dell'app  
-  // Completamente statico, senza props o stato  
+  // ========== TITLESUBTITLE COMPONENT ==========
+  // Shows the app logo and a short description
+  // Completely static, no props or state
 
   return (
     <div className="flex flex-col gap-4 items-center w-full pb-6">
       
-      {/* Container logo */}
+      {/* Logo container */}
       <div className="w-1/4">
-        <img src="/icons/iAmChef_Logo.jpg" alt="logo app" className="rounded-lg shadow-md" />
+        <img src="/icons/iAmChef_Logo.jpg" alt="app logo" className="rounded-lg shadow-md" />
       </div>
       
-      {/* Titolo descrittivo dell'app */}
+      {/* App descriptive title */}
       <p className="text-purple-200 font-jainiPurva text-lg font-normal leading-[1.3em] text-center">
-         Ingredienti → Ricetta pronta 🧑‍🍳✨
+         Ingredients → Ready Recipe 🧑‍🍳✨
       </p>
     </div>
   );

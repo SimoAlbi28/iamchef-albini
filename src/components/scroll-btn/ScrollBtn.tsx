@@ -50,7 +50,7 @@ const ScrollBtn: React.FC<ScrollBtnProps> = ({
       {/* ========== ICONA FRECCIA ========== */}
       {/* Usa la stessa icona per entrambe le frecce */}
       {/* Se isIncrement è false, ruota l'icona per creare l'effetto freccia sinistra */}
-      <img className={`w-14 h-14 ${!isIncrement && "rotate-y-180"}`} src={`/icons/nextRecipeIcon.svg`} />
+      <img className={`w-14 h-14 ${!isIncrement && "rotate-y-180"}`} src={`/icons/nextRecipeIcon.png`} />
     
     </button>
   );

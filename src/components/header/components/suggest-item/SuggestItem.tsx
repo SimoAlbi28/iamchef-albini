@@ -9,7 +9,7 @@ const SuggestItem = ({ ingredient, handleClick }: SuggestItemProps) => {
   return (
     <div
       onClick={() => handleClick(ingredient)} 
-      className="bg-white rounded-lg p-2 cursor-pointer">
+      className="bg-white text-black rounded-lg p-2 cursor-pointer">
         <h1>{ingredient.name}</h1>
     </div>
   )
