@@ -8,8 +8,6 @@ type IntropageProps = {
 export function Intropage({ onApiKeySaved }: IntropageProps) {
   const { apiKey, setApiKey } = useApiConfigStore();
   const [inputApiKey, setInputApiKey] = useState<string>(apiKey || "");
-
-  // 👁 gestione visibilità
   const [showKey, setShowKey] = useState(false);
 
   const handleSaveApiKey = () => {
@@ -19,7 +17,6 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
     }
   };
 
-  // ❌ reset input
   const handleReset = () => setInputApiKey("");
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -27,28 +24,28 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
   };
 
   return (
-    <main className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-green-200 via-white to-green-100 p-6">
+    <main className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-purple-200 via-white to-purple-100 p-6">
 
       {/* HEADER */}
       <section className="text-center mb-10">
-        <h1 className="text-5xl font-black text-green-800 drop-shadow-md tracking-tight">
-          i Am Chef 🧑‍🍳
+        <h1 className="text-5xl font-black text-purple-800 drop-shadow-md tracking-tight">
+          I AM CHEF 🧑‍🍳
         </h1>
-        <p className="text-lg text-green-600 font-medium mt-2">
-          Ricette smart. Zero sbatti. 😮‍💨🔥
+        <p className="text-lg text-purple-600 font-medium mt-2">
+          Ricette smart. Senza stress. 😎🔥
         </p>
       </section>
 
       {/* CARD */}
-      <section className="w-full max-w-sm backdrop-blur-xl bg-white/80 border border-green-200 rounded-3xl shadow-xl p-6">
+      <section className="w-full max-w-sm backdrop-blur-xl bg-white/80 border border-purple-200 rounded-3xl shadow-xl p-6">
 
-        <h2 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
-          🔐 API Setup
+        <h2 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
+          🔑 Configura API
         </h2>
 
         {/* LABEL */}
-        <label className="block text-sm font-semibold text-green-700 mb-2">
-          Spoonacular API Key
+        <label className="block text-sm font-semibold text-purple-700 mb-2">
+          Inserisci la tua chiave Spoonacular
         </label>
 
         {/* INPUT + OCCHIO + RESET */}
@@ -58,15 +55,15 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
             value={inputApiKey}
             onChange={(e) => setInputApiKey(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Inserisci la tua API Key..."
-            className="w-full px-4 py-3 rounded-lg bg-green-50 border-2 border-green-300 focus:ring-4 focus:ring-green-200 focus:border-green-700 transition-all outline-none text-green-900 font-semibold placeholder-green-400"
+            placeholder="Scrivi qui la tua API Key..."
+            className="w-full px-4 py-3 rounded-lg bg-purple-50 border-2 border-purple-300 focus:ring-4 focus:ring-purple-200 focus:border-purple-700 transition-all outline-none text-purple-900 font-semibold placeholder-purple-400"
           />
 
           {/* 👁 Show/Hide */}
           <button
             type="button"
             onClick={() => setShowKey((prev) => !prev)}
-            className="absolute right-10 text-green-800 hover:opacity-75 transition cursor-pointer"
+            className="absolute right-10 text-purple-800 hover:opacity-75 transition cursor-pointer"
           >
             {showKey ? "🙈" : "👁️"}
           </button>
@@ -85,29 +82,29 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
 
         {/* FEEDBACK */}
         {apiKey && (
-          <p className="text-sm text-green-600 font-medium mt-3 flex items-center gap-2">
-            ✓ API Key salvata
+          <p className="text-sm text-purple-600 font-medium mt-3 flex items-center gap-2">
+            ✅ Chiave salvata con successo
           </p>
         )}
 
         {/* BUTTON SALVA */}
         <button
           onClick={handleSaveApiKey}
-          className="mt-5 w-full py-3 px-4 bg-green-700 hover:bg-green-800 active:bg-green-900 text-white font-bold rounded-xl shadow-md active:scale-95 transition-all flex justify-center items-center gap-2"
+          className="mt-5 w-full py-3 px-4 bg-purple-700 hover:bg-purple-800 active:bg-purple-900 text-white font-bold rounded-xl shadow-md active:scale-95 transition-all flex justify-center items-center gap-2"
         >
-          💾 Salva
+          🧩 Entra
         </button>
 
         {/* LINK */}
         <p className="text-xs text-gray-600 mt-5 text-center">
-          Non hai una key?{" "}
+          Non possiedi una key?{" "}
           <a
             href="https://spoonacular.com/food-api"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-green-700 font-bold hover:underline"
+            className="text-purple-700 font-bold hover:underline"
           >
-            Clicca qui
+            Ottienila qui
           </a>
         </p>
       </section>

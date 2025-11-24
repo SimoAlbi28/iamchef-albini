@@ -39,7 +39,7 @@ export function ScrollBtnSection({ currentIndex, setCurrentIndex, maxIndex, goTo
         className="flex w-12 h-12 shrink-0"
         onClick={goToHomepage}
       >
-        <img src="/icons/iAmChef_Logo.svg" alt="Logo" className="w-full h-full rounded-lg"/>
+        <img src="/icons/iAmChef_Logo.jpg" alt="Logo" className="w-full h-full rounded-lg"/>
       </div>
 
       {/* ========== BOTTONE FRECCIA DESTRA ========== */}

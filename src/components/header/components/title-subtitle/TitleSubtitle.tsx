@@ -8,7 +8,7 @@ export default function Titlesubtitle() {
     <div className="flex flex-col gap-4 items-center w-full pb-6">
       {/* Container logo */}
       <div className="w-1/4">
-        <img src="/icons/iAmChef_Logo.svg" alt="logo app" className="rounded-lg" />
+        <img src="/icons/iAmChef_Logo.jpg" alt="logo app" className="rounded-lg" />
       </div>
       
       {/* Titolo descrittivo dell'app */}
