@@ -3,45 +3,48 @@ import SearchBar from "../components/header/components/search-bar/Searchbar"
 import SelectedList from "../components/header/components/selected-item/SelectedList"
 import DiscoverRecipeBtn from "../components/header/components/discover-recipes-btn/DiscoverRecipeBtn"
 
-
 type SearchPageProps = {
-    // Callback richiamata quando l'utente seleziona un ingrediente dalla lista suggerita
     onSuggestClick: (ing: IngredientInterface) => void,
-    // Callback richiamata quando l'utente rimuove un ingrediente selezionato
     onBadgeRemove: (ing: IngredientInterface) => void,
-    // Array degli ingredienti attualmente selezionati
-    selectedIng: IngredientInterface[]
-    // Callback richiamata quando l'utente clicca il bottone "Discover Recipe"
-    onSearchClick: () => void
-    // Flag per indicare se la ricerca è in corso (mostra stato "loading")
+    selectedIng: IngredientInterface[],
+    onSearchClick: () => void,
     isDiscover: boolean
 }
 
 const SearchPage =({onSuggestClick, onBadgeRemove, selectedIng, onSearchClick, isDiscover}: SearchPageProps) => {
-    // ========== COMPONENTE SEARCH PAGE ==========
-    // Pagina principale che mostra:
-    // 1. Barra di ricerca per inserire ingredienti
-    // 2. Lista degli ingredienti selezionati
-    // 3. Bottone per iniziare la ricerca di ricette
-    
     return (
-        <div>
-               <div className="flex flex-col gap-4">
-                {/* Titolo della sezione */}
-                <p>
-                   INGREDIENTI PER LA RICETTA
+        <div className="w-full flex flex-col items-center p-6 bg-gradient-to-b from-purple-100 via-white to-purple-200">
+            
+            {/* Card principale */}
+            <div className="flex flex-col gap-6 w-full max-w-md bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-6">
+                
+                {/* Titolo sezione */}
+                <p className="text-purple-800 font-bold text-lg text-center tracking-tight">
+                    🧩 Ingredienti per la ricetta
                 </p>
                 
-                {/* Barra di ricerca - gestisce l'input e filtra gli ingredienti */}
-                <SearchBar handleSuggestClick={onSuggestClick} />
+                {/* Barra di ricerca */}
+                <div className="relative rounded-xl border border-purple-300 focus-within:ring-4 focus-within:ring-purple-200">
+                  <SearchBar handleSuggestClick={onSuggestClick} />
+                </div>
 
-                {/* Lista degli ingredienti selezionati - permette la rimozione */}
-                <SelectedList 
-                    ingredients={selectedIng} 
-                    handleRemove={onBadgeRemove}/>
+                {/* Lista ingredienti selezionati */}
+                <div className="mt-2">
+                  <SelectedList 
+                      ingredients={selectedIng} 
+                      handleRemove={onBadgeRemove}
+                  />
+                </div>
 
-                {/* Bottone per iniziare la ricerca - disabilitato se nessun ingrediente è selezionato */}
-                <DiscoverRecipeBtn ingredients={selectedIng} onSearchClick={onSearchClick} isDiscover={isDiscover}/>
+                {/* Bottone Discover Recipe */}
+                <div className="mt-4 w-full">
+                  <DiscoverRecipeBtn 
+                      ingredients={selectedIng} 
+                      onSearchClick={onSearchClick} 
+                      isDiscover={isDiscover}
+                  />
+                </div>
+
             </div>
         </div>
     )

@@ -1,37 +1,34 @@
 import React from 'react'
+
 interface LayoutProps {
-  // ReactNode per l'header (logo, titolo, ecc.)
-  header?: React.ReactNode,
-  // ReactNode per il contenuto principale (pagina attuale)
-  main?: React.ReactNode,
-  // ReactNode per il footer
+  header?: React.ReactNode
+  main?: React.ReactNode
   footer?: React.ReactNode
 }
 
 function Layout({ header, main, footer }: LayoutProps) {
-  // ========== LAYOUT PRINCIPALE ==========
-  // Componente contenitore che gestisce la struttura della pagina
-  // Usa flexbox per disporre verticalmente: header, main content, footer
-  
-    return (
-        <main className={`w-screen max-w-96 h-screen flex flex-col mx-auto bg-green-700 overflow-hidden`}>
-              {                
-                // Sezione dell'header - mostra il componente header ricevuto come prop
-                <header className="mb-6 shrink-0">
-                  {header}
-                </header>
-              }
+  return (
+    <main className="w-screen max-w-96 h-screen flex flex-col mx-auto bg-gradient-to-b from-purple-900 via-purple-800 to-purple-700 text-purple-100">
       
-            {/* Sezione principale - contiene il contenuto della pagina corrente */}
-            <section className={`w-full flex-1 flex justify-center min-h-0 overflow-hidden`}>
-              {main}
-            </section>
+      {/* Header */}
+      <header className="mb-6 shrink-0">
+        {header}
+      </header>
 
-            {/* Footer della pagina */}
-            {footer}
-            
-        </main>
-    )
+      {/* Contenuto principale */}
+      <section className="w-full flex-1 flex justify-center items-start min-h-0 p-4">
+        {main}
+      </section>
+
+      {/* Footer */}
+      {footer && (
+        <footer className="mt-4 p-4 text-center text-purple-200 border-t border-purple-600">
+          {footer}
+        </footer>
+      )}
+
+    </main>
+  )
 }
 
 export default Layout

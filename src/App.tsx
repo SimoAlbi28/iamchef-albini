@@ -7,7 +7,7 @@ import RecipeDetails from './pages/RecipeDetails.tsx'
 import SearchPage from './pages/SearchPage.tsx'
 import Layout from "./components/layout/Layout"
 import Header from './components/header/Header'
-import Footer from './Footer'
+import Footer from './components/Footer'
 import Intropage from "./pages/Intropage.tsx"
 
 function App() {
@@ -75,7 +75,7 @@ function App() {
 
   // Torna alla homepage
   const goToHomepage = () => {
-    setCurrentPage({currentPage: {page: "Intropage"}});
+    setCurrentPage({currentPage: {page: "SearchPage"}});
   }
 
   // Torna alla pagina discover-recipes mantenendo l'indice della ricetta precedentemente visualizzata
