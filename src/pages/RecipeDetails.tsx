@@ -1,4 +1,6 @@
 import type { RecipeInterface } from "../types/recipes.ts";
+import { useEffect, useState } from "react";
+import { useApiConfigStore } from "../store/apiConfigStore";
 import { getDifficulty } from "../utils/getDifficulty.ts";
 import { IconBadge } from "../components/card-components/IconBadge.tsx";
 import { getCost } from "../utils/getCost.tsx";
@@ -18,10 +20,77 @@ type RecipeDetailsProps = {
 };
 
 export const RecipeDetails = ({ id, recipeData, goToBack}: RecipeDetailsProps) => {
-  const recipe = recipeData || fallbackRecipe;
+  // stato per dati dettagliati (chiamata /recipes/{id}/information)
+  const [fullRecipe, setFullRecipe] = useState<RecipeInterface | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { apiKey } = useApiConfigStore();
+
+  // Se abbiamo un id della ricetta, fetchiamo i dettagli completi
+  useEffect(() => {
+    let cancelled = false;
+    const fetchDetails = async () => {
+      if (!recipeData?.id) return;
+      const baseUrl = import.meta.env.VITE_BASE_URL;
+      const url = `${baseUrl}/recipes/${recipeData.id}/information?apiKey=${apiKey ?? ""}&includeNutrition=false`;
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(url);
+        if (!res.ok) {
+          setError(`Errore fetching details: ${res.status}`);
+          return;
+        }
+        const json = await res.json();
+        if (cancelled) return;
+        setFullRecipe(json as RecipeInterface);
+      } catch (err) {
+        if (!cancelled) setError((err as Error).message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchDetails();
+    return () => { cancelled = true }
+  }, [recipeData?.id, apiKey]);
+
+  // Usa i dettagli completi se presenti, altrimenti la recipeData passata o il fallback
+  const recipe = fullRecipe ?? recipeData ?? fallbackRecipe;
+
+  // Normalizza gli ingredienti perché l'endpoint `findByIngredients` può restituire
+  // `usedIngredients` / `missedIngredients` invece di `extendedIngredients`.
+  const normalizeIngredients = (r: any) => {
+    if (Array.isArray(r?.extendedIngredients)) return r.extendedIngredients;
+
+    const used = Array.isArray(r?.usedIngredients) ? r.usedIngredients : [];
+    const missed = Array.isArray(r?.missedIngredients) ? r.missedIngredients : [];
+    const combined = [...used, ...missed];
+
+    if (combined.length > 0) {
+      return combined.map((it: any, idx: number) => ({
+        aisle: it.aisle ?? "",
+        amount: it.amount ?? it.measures?.metric?.amount ?? 0,
+        consistency: it.consistency ?? "",
+        id: it.id ?? idx,
+        image: it.image ?? "",
+        measures: it.measures ?? { metric: { amount: it.amount ?? 0, unitLong: it.unit ?? "", unitShort: it.unit ?? "" }, us: { amount: it.amount ?? 0, unitLong: it.unit ?? "", unitShort: it.unit ?? "" } },
+        meta: it.meta ?? [],
+        name: it.name ?? it.originalName ?? "Ingrediente",
+        original: it.original ?? "",
+        originalName: it.originalName ?? it.name ?? "",
+        unit: it.unit ?? "",
+      }));
+    }
+
+    // fallback: se non ci sono ingredienti, ritorna array vuoto
+    return [] as any[];
+  }
 
   const maxIngredientsToShow = 4;
-  const displayedIngredients = recipe.extendedIngredients.slice(0, maxIngredientsToShow);
+  const normalizedIngredients = normalizeIngredients(recipe);
+  const displayedIngredients = (normalizedIngredients ?? []).slice(0, maxIngredientsToShow);
 
   const interestingTags = [
     recipe.vegetarian && 'Vegetarian',

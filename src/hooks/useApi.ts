@@ -31,9 +31,18 @@ function useApi<T = any>(url: string): UseApiReturn<T> {
         setError(null)
         const response = await fetch(url)
         const result = await response.json()
-        
+
         if (!cancelled) {
-          setData(result.results)
+          // Spoonacular `findByIngredients` returns an array of recipes (not wrapped in `results`).
+          // Some endpoints return `{ results: [...] }`. Support both shapes:
+          if (Array.isArray(result)) {
+            setData(result as unknown as T)
+          } else if (result && typeof result === 'object' && 'results' in result) {
+            // @ts-ignore - we check at runtime
+            setData(result.results)
+          } else {
+            setData(result as T)
+          }
         }
       } catch (err) {
         if (!cancelled) {
@@ -66,6 +75,18 @@ export const getIngredientURL= (query: string, apiKey: string) =>{
     const ENDPOINT= "/food/ingredients/search";
     const RESULT_NUM= 10;
     return `${import.meta.env.VITE_BASE_URL}${ENDPOINT}?apiKey=${apiKey}&query=${query}&number=${RESULT_NUM}`;//qua
+}
+
+/**
+ * Funzione di helper per costruire l'URL della chiamata API per la ricerca delle ricette.
+ * @param ingredients stringa di ingredienti separati da virgola
+ * @param apiKey API key Spoonacular
+ * @returns URL completo per la chiamata API
+ */
+export const getRecipesURL= (ingredients: string, apiKey: string) =>{
+    const ENDPOINT= "/recipes/findByIngredients";
+    const RESULT_NUM= 10;
+    return `${import.meta.env.VITE_BASE_URL}${ENDPOINT}?apiKey=${apiKey}&ingredients=${ingredients}&number=${RESULT_NUM}`;
 }
 
 export default useApi

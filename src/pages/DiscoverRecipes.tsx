@@ -33,8 +33,10 @@ function DiscoverRecipes({ currentIndex, recipes, onRecipeDetailClick, goToHomep
     >
 
       {/* Sezione principale: mostra la ricetta attualmente visualizzata */}
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <RecipeCard recipe={recipes[currentIndex]} onClickDetails={onRecipeDetailClick} />
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="px-4 py-4">
+          <RecipeCard recipe={recipes[currentIndex]} onClickDetails={onRecipeDetailClick} />
+        </div>
       </div>
 
       {/* Sezione di navigazione: bottoni per scorrere le ricette */}

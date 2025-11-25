@@ -9,12 +9,57 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
   const { apiKey, setApiKey } = useApiConfigStore();
   const [inputApiKey, setInputApiKey] = useState<string>(apiKey || "");
   const [showKey, setShowKey] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
-  const handleSaveApiKey = () => {
-    if (inputApiKey.trim()) {
+  // Valida l'API key facendo una richiesta di test a Spoonacular
+  const validateApiKey = async (key: string): Promise<boolean> => {
+    try {
+      const baseUrl = import.meta.env.VITE_BASE_URL;
+      
+      // Usa l'endpoint leggero per gli ingredienti (non dovrebbe consumare crediti)
+      const testUrl = `${baseUrl}/food/ingredients/search?apiKey=${key}&query=tomato&number=1`;
+      const response = await fetch(testUrl);
+
+      // 401/403 = key non valida
+      if (response.status === 401 || response.status === 403) {
+        setValidationError("❌ API key non valida o autorizzazione negata");
+        return false;
+      }
+
+      // Altri status non-ok: mostra messaggio generico ma NON triggerare chiamate a recipes
+      if (!response.ok) {
+        setValidationError(`❌ Errore API: ${response.status} - ${response.statusText}`);
+        return false;
+      }
+
+      // Successo
+      setValidationError(null);
+      return true;
+    } catch (err) {
+      setValidationError(`❌ Errore di connessione: ${(err as Error).message}`);
+      return false;
+    }
+  };
+
+  const handleSaveApiKey = async () => {
+    if (!inputApiKey.trim()) {
+      setValidationError("❌ Inserisci una API key");
+      return;
+    }
+
+    setIsValidating(true);
+    setValidationError(null);
+    
+    const isValid = await validateApiKey(inputApiKey);
+    
+    if (isValid) {
       setApiKey(inputApiKey);
+      setValidationError(null);
       if (onApiKeySaved) onApiKeySaved();
     }
+    
+    setIsValidating(false);
   };
 
   const handleReset = () => setInputApiKey("");
@@ -37,7 +82,7 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
       </section>
 
       {/* CARD */}
-      <section className="w-full max-w-sm backdrop-blur-xl bg-white/80 border border-purple-200 rounded-3xl shadow-xl p-6">
+      <section className="w-full max-w-2xl sm:max-w-xl backdrop-blur-xl bg-white/80 border border-purple-200 rounded-3xl shadow-xl p-6">
 
         <h2 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
           🔑 Setup API
@@ -81,18 +126,30 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
         </div>
 
         {/* FEEDBACK */}
-        {apiKey && (
+        {apiKey && !validationError && (
           <p className="text-sm text-purple-600 font-medium mt-3 flex items-center gap-2">
             ✅ Key saved successfully
+          </p>
+        )}
+
+        {/* ERROR MESSAGE */}
+        {validationError && (
+          <p className="text-sm text-red-600 font-medium mt-3">
+            {validationError}
           </p>
         )}
 
         {/* SAVE BUTTON */}
         <button
           onClick={handleSaveApiKey}
-          className="mt-5 w-full py-3 px-4 bg-purple-700 hover:bg-purple-800 active:bg-purple-900 text-white font-bold rounded-xl shadow-md active:scale-95 transition-all flex justify-center items-center gap-2"
+          disabled={isValidating}
+          className={`mt-5 w-full py-3 px-4 ${
+            isValidating
+              ? "bg-purple-500 cursor-not-allowed opacity-70"
+              : "bg-purple-700 hover:bg-purple-800 active:bg-purple-900 active:scale-95"
+          } text-white font-bold rounded-xl shadow-md transition-all flex justify-center items-center gap-2`}
         >
-          🧩 Enter
+          {isValidating ? "🔄 Validating..." : "🧩 Enter"}
         </button>
 
         {/* LINK */}

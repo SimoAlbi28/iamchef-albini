@@ -16,7 +16,7 @@ const SearchPage =({onSuggestClick, onBadgeRemove, selectedIng, onSearchClick, i
         <div className="w-full flex flex-col items-center p-6 bg-gradient-to-b from-purple-100 via-white to-purple-200">
             
             {/* Card principale */}
-            <div className="flex flex-col gap-6 w-full max-w-md bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-6">
+            <div className="flex flex-col gap-6 w-full max-w-md bg-white/100 backdrop-blur-lg rounded-3xl shadow-xl p-6">
                 
                 {/* Titolo sezione */}
                 <p className="text-purple-800 font-bold text-lg text-center tracking-tight">

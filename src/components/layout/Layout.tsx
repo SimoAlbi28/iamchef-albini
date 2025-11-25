@@ -16,7 +16,7 @@ function Layout({ header, main, footer }: LayoutProps) {
       </header>
 
       {/* Main content section */}
-      <section className="w-full flex-1 flex justify-center items-start min-h-0 p-4">
+      <section className="w-full flex-1 flex justify-center items-start min-h-0 p-0">
         {main}
       </section>
 

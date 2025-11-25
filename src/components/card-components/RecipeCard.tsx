@@ -16,7 +16,7 @@ export const RecipeCard = ({ recipe, onClickDetails }: RecipeCardProps) => {
   const data = recipe || fallbackRecipe;
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-purple-100 via-purple-50 to-purple-200 rounded-3xl shadow-xl p-4 flex flex-col gap-6 overflow-hidden min-h-0">
+    <div className="w-full bg-gradient-to-br from-purple-100 via-purple-50 to-purple-200 rounded-3xl shadow-xl p-4 flex flex-col gap-6 overflow-hidden min-h-0">
 
       {/* Recipe Image */}
       <RecipeImage image={data.image} title={data.title} />
