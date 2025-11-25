@@ -22,9 +22,17 @@ type DiscoverRecipesProps = {
 
 function DiscoverRecipes({ currentIndex, recipes, onRecipeDetailClick, goToHomepage, setCurrentIndex }: DiscoverRecipesProps) {
   // ========== COMPONENTE DISCOVER RECIPES ==========
-  // Visualizza un carosello di ricette con:
-  // 1. RecipeCard: mostra i dettagli della ricetta corrente
-  // 2. ScrollBtnSection: bottoni per navigare tra le ricette
+  // Questo componente mostra un carosello di ricette
+  // 
+  // Struttura:
+  // 1. Area scrollabile in alto: mostra la ricetta attualmente selezionata
+  // 2. Area bottoni in basso: permette di navigare tra le ricette
+  //
+  // Flusso:
+  // - L'utente vede la prima ricetta della lista (indice 0)
+  // - Può scorrere in alto per leggere tutti i dettagli della ricetta
+  // - Può cliccare i bottoni in basso per navigare alle ricette precedente/successiva
+  // - Può cliccare "View Details" per andare alla pagina completa della ricetta
 
   return (
     <main
@@ -32,18 +40,26 @@ function DiscoverRecipes({ currentIndex, recipes, onRecipeDetailClick, goToHomep
       className="w-full h-full flex flex-col gap-0 overflow-hidden min-h-0"
     >
 
-      {/* Sezione principale: mostra la ricetta attualmente visualizzata */}
+      {/* SEZIONE 1: Area scrollabile con la ricetta corrente */}
+      {/* flex-1 significa che usa tutto lo spazio disponibile */}
+      {/* min-h-0 è necessario per far funzionare correttamente il flex layout */}
+      {/* overflow-y-auto permette di scrollare se il contenuto è troppo lungo */}
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="px-4 py-4">
+          {/* RecipeCard: mostra titolo, tempo, ingredienti, immagine della ricetta */}
+          {/* recipes[currentIndex] seleziona la ricetta in base all'indice corrente */}
+          {/* onClickDetails è il callback quando l'utente clicca "View Details" */}
           <RecipeCard recipe={recipes[currentIndex]} onClickDetails={onRecipeDetailClick} />
         </div>
       </div>
 
-      {/* Sezione di navigazione: bottoni per scorrere le ricette */}
+      {/* SEZIONE 2: Area bottoni per la navigazione */}
+      {/* shrink-0 significa che questa sezione non si riduce (rimane sempre visibile) */}
       <div className="shrink-0">
+        {/* ScrollBtnSection: contiene i bottoni per navigare tra le ricette */}
         <ScrollBtnSection
-          currentIndex={currentIndex} 
-          maxIndex={recipes.length-1} 
+          currentIndex={currentIndex}
+          maxIndex={recipes.length-1}
           setCurrentIndex={setCurrentIndex}
           goToHomepage={goToHomepage}
         />
