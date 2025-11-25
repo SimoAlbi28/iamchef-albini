@@ -29,6 +29,7 @@ const SearchBar = forwardRef<{ reset: () => void }, SearchBarProps>(({ handleSug
   useImperativeHandle(ref, () => ({
     reset: () => {
       setSearchingIng("");
+      setStateURL("");
       setIsFocused(false);
     }
   }));
@@ -122,7 +123,7 @@ const SearchBar = forwardRef<{ reset: () => void }, SearchBarProps>(({ handleSug
       {loading&& <p>caricamento in corso...</p>}
       
       {/* Lista dei suggerimenti: mostra solo se l'utente ha digitato qualcosa */}
-      {filteredIngredients && (
+      {filteredIngredients && searchingIng.length > 0 && (
         <SuggestList
           ingredients={filteredIngredients}
           handleClick={handleClick}
