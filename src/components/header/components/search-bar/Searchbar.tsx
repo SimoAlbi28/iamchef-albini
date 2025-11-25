@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { Search } from "lucide-react";
 import type { IngredientInterface } from "../../../../types/recipes";
 import SuggestList from "../suggest-item/SuggestList";
@@ -15,7 +15,7 @@ type SearchBarProps = {
 }
 
 // Il mio componente SearchBar: gestisce tutto ciò che riguarda la ricerca dell'ingrediente
-const SearchBar = ({ handleSuggestClick }: SearchBarProps) => {
+const SearchBar = forwardRef<{ reset: () => void }, SearchBarProps>(({ handleSuggestClick }, ref) => {
 
   const {apiKey} = useApiConfigStore();
   // ========== STATI LOCALI ==========
@@ -24,6 +24,14 @@ const SearchBar = ({ handleSuggestClick }: SearchBarProps) => {
 
   // Stato che contiene il testo scritto dall'utente nella searchbar
   const [searchingIng, setSearchingIng] = useState<string>("");
+
+  // Espone il metodo reset al parent tramite useImperativeHandle
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      setSearchingIng("");
+      setIsFocused(false);
+    }
+  }));
 
   //TODO: Rimuovere lo state locale stateURL una volta migrato a Zustand
   const [stateURL, setStateURL]=useState<string>("");
@@ -122,6 +130,8 @@ const SearchBar = ({ handleSuggestClick }: SearchBarProps) => {
       )}
     </>
   );
-};
+});
+
+SearchBar.displayName = "SearchBar";
 
 export default SearchBar;

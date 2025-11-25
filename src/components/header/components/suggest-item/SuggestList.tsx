@@ -9,7 +9,7 @@ type SuggestListProps = {
 // componente che renderizza la lista di elementi suggeriti, facendo prop drilling per l'evento di click
 const SuggestList = ({ ingredients, handleClick }: SuggestListProps) => {
   return (
-    <div className="max-h-40 overflow-y-auto rounded-lg bg-white">
+    <div className="max-h-30 overflow-y-auto rounded-lg bg-white">
     {ingredients.map((ingredient) => (
         <SuggestItem key={ingredient.name} ingredient={ingredient} handleClick={handleClick} />
     ))}

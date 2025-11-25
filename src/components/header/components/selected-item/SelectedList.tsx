@@ -14,7 +14,7 @@ const SelectedList = ({ ingredients, handleRemove }: SelectedListProps) => {
   // Ogni badge ha un bottone X per la rimozione
   
   return (
-    <div className={`max-h-40 flex flex-wrap gap-4 overflow-y-auto rounded-lg`}>
+    <div className={`max-h-20 flex flex-wrap gap-2 overflow-y-auto rounded-lg pr-2 content-start`}>
     {/* Mappa ogni ingrediente a un componente SelectedItem */}
     {ingredients.map((ingredient, index) => (
         <SelectedItem 

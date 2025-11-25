@@ -33,6 +33,9 @@ function App() {
   const [URL, setURL] = useState<string>("")
   // Flag che abilita la fetch delle ricette (evita chiamate automatiche non volute)
   const [recipesFetchEnabled, setRecipesFetchEnabled] = useState<boolean>(false)
+  
+  // API Key dal Zustand store
+  const { apiKey } = useApiConfigStore()
   // Quando recipesFetchEnabled è true e URL è settata, esegui la fetch qui
   useEffect(() => {
     let cancelled = false
@@ -58,6 +61,25 @@ function App() {
           recipesData = json as RecipeInterface[]
         }
 
+        // Se il risultato viene da findByIngredients (senza addRecipeInformation a causa di crediti),
+        // fetcha i dettagli per ogni ricetta in parallelo per aggiungere readyInMinutes, servings, dishTypes
+        if (recipesData && recipesData.length > 0 && !recipesData[0].readyInMinutes) {
+          const baseUrl = import.meta.env.VITE_BASE_URL
+          const detailsPromises = recipesData.map((recipe: any) =>
+            fetch(`${baseUrl}/recipes/${recipe.id}/information?apiKey=${apiKey ?? ""}&includeNutrition=false`)
+              .then(res => res.ok ? res.json() : null)
+              .catch(() => null)
+          )
+          
+          const detailedRecipes = await Promise.all(detailsPromises)
+          
+          // Mergia i dettagli con i dati iniziali
+          recipesData = recipesData.map((recipe: any, idx: number) => {
+            const details = detailedRecipes[idx]
+            return details ? { ...recipe, ...details } : recipe
+          })
+        }
+
         setRecipes(recipesData || [])
         setCurrentPage({ currentPage: { page: 'discover-recipes' } })
       } catch (err) {
@@ -73,9 +95,7 @@ function App() {
     fetchRecipes()
 
     return () => { cancelled = true }
-  }, [recipesFetchEnabled, URL])
-  // API Key dal Zustand store
-  const { apiKey } = useApiConfigStore()
+  }, [recipesFetchEnabled, URL, apiKey])
 
   // NOTE: non costruiamo l'URL automaticamente quando cambia selectedIng
   // La fetch deve partire SOLO al click su Discover (handleSearchClick)
@@ -123,6 +143,11 @@ function App() {
     setSelectedIng(selectedIng.filter(tag => tag != ingredient))
   }
 
+  // Resetta tutti gli ingredienti selezionati
+  const handleResetIngredients = () => {
+    setSelectedIng([])
+  }
+
   // ========== HANDLER PER LA NAVIGAZIONE ==========
   // Naviga alla pagina dei dettagli della ricetta selezionata
   const handleRecipeDetailClick = (recipe:RecipeInterface) => {
@@ -160,7 +185,7 @@ function App() {
       mainContent = <RecipeDetails id={currentIndex} goToBack={handleClickBack} recipeData={currentPage.currentPage.recipeData!}/>
       break;
     default:
-      mainContent = <SearchPage onSuggestClick={handleSuggestClick} onBadgeRemove={handleSuggestRemove} selectedIng={selectedIng} onSearchClick={handleSearchClick} isDiscover={isDiscover}/>
+      mainContent = <SearchPage onSuggestClick={handleSuggestClick} onBadgeRemove={handleSuggestRemove} selectedIng={selectedIng} onSearchClick={handleSearchClick} onResetClick={handleResetIngredients} isDiscover={isDiscover}/>
       break;
   }
   

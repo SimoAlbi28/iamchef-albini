@@ -15,8 +15,8 @@ const DiscoverRecipeBtn = ({ ingredients, onSearchClick, isDiscover }: DiscoverR
     return (
         <button 
           className={`
-            w-full flex justify-center items-center gap-2 py-3 px-4 
-            rounded-xl font-bold text-white text-center
+            w-full flex justify-center items-center gap-1.5 py-2 px-3 
+            rounded-lg font-semibold text-white text-center text-sm
             transition-all duration-300 shadow-md
             ${isDiscover 
               ? "bg-purple-500 cursor-default" 
@@ -26,7 +26,7 @@ const DiscoverRecipeBtn = ({ ingredients, onSearchClick, isDiscover }: DiscoverR
           onClick={onSearchClick}
           disabled={isDiscover}
         >
-            {isDiscover ? "Discovering..." : "Discover Recipes"} <ArrowRight size={18} />
+            {isDiscover ? "Discovering..." : "Discover Recipes"} <ArrowRight size={16} />
         </button>
     );
 }
