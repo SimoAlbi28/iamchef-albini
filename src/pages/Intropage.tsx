@@ -1,11 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useApiConfigStore } from "../store/apiConfigStore";
 
-type IntropageProps = {
-  onApiKeySaved?: () => void;
-};
-
-export function Intropage({ onApiKeySaved }: IntropageProps) {
+export function Intropage() {
+  // ========== ROUTING & NAVIGATION ==========
+  // useNavigate() - Hook di React Router per navigazione programmatica
+  // Permette di cambiare rotta dopo aver salvato l'API key
+  // Sostituisce la prop callback onApiKeySaved che veniva passata da App.tsx
+  const navigate = useNavigate();
+  
+  // ========== ZUSTAND STORE ==========
+  // useApiConfigStore() - Store globale per l'API key
+  // - apiKey: valore corrente della key (letto da localStorage)
+  // - setApiKey: salva la key nello store e localStorage
   const { apiKey, setApiKey } = useApiConfigStore();
   const [inputApiKey, setInputApiKey] = useState<string>(apiKey || "");
   const [showKey, setShowKey] = useState(false);
@@ -51,12 +58,19 @@ export function Intropage({ onApiKeySaved }: IntropageProps) {
     setIsValidating(true);
     setValidationError(null);
     
+    // Valida l'API key con una chiamata di test
     const isValid = await validateApiKey(inputApiKey);
     
     if (isValid) {
+      // Salva la key nello store Zustand (persiste in localStorage)
       setApiKey(inputApiKey);
       setValidationError(null);
-      if (onApiKeySaved) onApiKeySaved();
+      
+      // ========== NAVIGAZIONE POST-SALVATAGGIO ==========
+      // Dopo aver salvato con successo l'API key, naviga alla pagina di ricerca
+      // navigate() sostituisce window.location o il cambio di stato in App.tsx
+      // La rotta '/search' è definita in router.tsx e renderizza <SearchPage />
+      navigate('/search');
     }
     
     setIsValidating(false);

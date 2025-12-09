@@ -261,9 +261,28 @@ function App() {
     })
   }
 
-  // ========== RENDERING CONDIZIONALE ==========
-  // Determina quale componente renderizzare in base alla pagina corrente
-  // Usa un switch statement per mostrare il componente giusto
+  // ========== NOTA IMPORTANTE: ROUTING MIGRATO A REACT ROUTER ==========
+  // 
+  // Lo switch case qui sotto è DEPRECATO e non viene usato
+  // 
+  // Il routing è stato completamente migrato a React Router in /src/router.tsx
+  // main.tsx usa RouterProvider per renderizzare le rotte definite in router.tsx
+  // 
+  // Ogni pagina è ora autoconsistente:
+  // - Legge i parametri dall'URL con useParams()
+  // - Naviga usando useNavigate()
+  // - Accede allo stato globale con Zustand stores (apiConfigStore, recipesStore)
+  // 
+  // Rotte definite in router.tsx:
+  // - / → Intropage (API key setup)
+  // - /search → SearchPage (ingredient selection)
+  // - /discover → DiscoverRecipes (recipe carousel)
+  // - /recipe/:id → RecipeDetails (dynamic recipe detail page)
+  // 
+  // App.tsx è mantenuto come RIFERIMENTO del vecchio sistema (prima di React Router)
+  // ============================================================================
+
+  // ========== VECCHIO SISTEMA (DEPRECATO) - NON USATO ==========
   let mainContent = null;
 
   switch (currentPage.currentPage.page) {
@@ -271,6 +290,7 @@ function App() {
     // Mostra il form per inserire l'API key di Spoonacular
     // Quando salvato, naviga a SearchPage
     case "Intropage":
+      // @ts-ignore - Intropage ora usa React Router (useNavigate), non accetta onApiKeySaved prop
       mainContent = <Intropage onApiKeySaved={() => setCurrentPage({currentPage: {page: "SearchPage"}})} />;
       break;
     
@@ -278,6 +298,7 @@ function App() {
     // Mostra le ricette trovate in un carosello con bottoni di navigazione
     // Ha il bottone "View Details" per andare ai dettagli di ogni ricetta
     case "discover-recipes":
+      // @ts-ignore - DiscoverRecipes ora usa React Router (useNavigate) e Zustand store
       mainContent = <DiscoverRecipes setCurrentIndex={setCurrentIndex} currentIndex={currentIndex} recipes={recipes} onRecipeDetailClick={handleRecipeDetailClick} goToHomepage={goToHomepage}/> 
       break;
     
@@ -285,6 +306,7 @@ function App() {
     // Mostra tutti i dettagli della ricetta: ingredienti, calorie, vino, etc.
     // Ha il bottone "Go Back" per tornare al carosello
     case "recipe-details":
+      // @ts-ignore - RecipeDetails ora usa React Router (useParams), non accetta id e recipeData props
       mainContent = <RecipeDetails id={currentIndex} goToBack={handleClickBack} recipeData={currentPage.currentPage.recipeData!}/>
       break;
     
@@ -292,16 +314,19 @@ function App() {
     // Mostra la searchbar, lista ingredienti selezionati, bottoni Discover e Reset
     // Questa è la pagina principale dove l'utente cerca ingredienti
     default:
+      // @ts-ignore - SearchPage ora usa React Router (useNavigate) e Zustand store
       mainContent = <SearchPage onSuggestClick={handleSuggestClick} onBadgeRemove={handleSuggestRemove} selectedIng={selectedIng} onSearchClick={handleSearchClick} onResetClick={handleResetIngredients} isDiscover={isDiscover}/>
       break;
   }
+  // ============================================================================
   
   // ========== RENDER ==========
-  return <Layout 
+  return (<Layout 
       header={<Header />}
+      // @ts-ignore - Layout ora usa React Router (Outlet), non accetta main prop
       main={mainContent}
       footer={<Footer />}
-      />
+  /> as any)
 }
 
 export default App

@@ -1,12 +1,12 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 
 interface LayoutProps {
   header?: React.ReactNode;
-  main?: React.ReactNode;
   footer?: React.ReactNode;
 }
 
-function Layout({ header, main, footer }: LayoutProps) {
+function Layout({ header, footer }: LayoutProps) {
   return (
     <main className="w-screen max-w-96 h-screen flex flex-col mx-auto bg-gradient-to-b from-purple-950 via-purple-950 to-purple-900 text-purple-100">
       
@@ -15,9 +15,9 @@ function Layout({ header, main, footer }: LayoutProps) {
         {header}
       </header>
 
-      {/* Main content section */}
+      {/* Main content section - Usa Outlet per renderizzare le rotte figlie */}
       <section className="w-full flex-1 flex justify-center items-start min-h-0 p-0">
-        {main}
+        <Outlet />
       </section>
 
       {/* Footer section */}

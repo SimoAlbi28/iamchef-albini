@@ -1,5 +1,6 @@
 import type { RecipeInterface } from "../types/recipes.ts";
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useApiConfigStore } from "../store/apiConfigStore";
 import { getDifficulty } from "../utils/getDifficulty.ts";
 import { IconBadge } from "../components/card-components/IconBadge.tsx";
@@ -13,72 +14,119 @@ import RecipeImage from "../components/card-components/RecipeImage.tsx";
 import { RecipeIngredients } from "../components/card-components/RecipeIngredients.tsx";
 import { fallbackRecipe } from "../mock/mock.ts";   
 
-type RecipeDetailsProps = {
-  id: number;
-  recipeData: RecipeInterface;
-  goToBack: (id:number) => void; 
-};
-
-export const RecipeDetails = ({ id, recipeData, goToBack}: RecipeDetailsProps) => {
+export const RecipeDetails = () => {
+  // ========== ROUTING DINAMICO CON useParams() ==========
+  /**
+   * useParams() - Hook di React Router per leggere parametri dinamici dall'URL
+   * 
+   * COME FUNZIONA:
+   * - Nel router è definita la rotta: /recipe/:id
+   * - Il segmento :id è un parametro dinamico
+   * - Quando l'utente naviga a /recipe/123, useParams() restituisce { id: "123" }
+   * - Qui estraiamo solo l'id con destructuring
+   * 
+   * ESEMPIO PRATICO:
+   * - URL: /recipe/716429 → id = "716429"
+   * - Questo id viene usato per fare il fetch dei dettagli
+   * 
+   * VECCHIO SISTEMA:
+   * - Prima l'id arrivava come prop da App.tsx: id: number
+   * - App.tsx lo salvava in uno stato quando l'utente cliccava una ricetta
+   * - Serviva fare props drilling e gestire lo stato
+   * 
+   * NUOVO SISTEMA:
+   * - L'id è nell'URL: /recipe/:id
+   * - Non serve passare props
+   * - L'URL è l'unica fonte di verità
+   * - Si può condividere il link e funziona direttamente
+   * - Il browser back/forward funzionano automaticamente
+   */
+  const { id } = useParams<{ id: string }>();
+  
+  /**
+   * useNavigate() - Hook per navigazione programmatica
+   * Usato per tornare indietro alla pagina /discover
+   */
+  const navigate = useNavigate();
+  
+  // ========== ZUSTAND STORE ==========
+  // API Key dal Zustand store globale
+  // Serve per autenticare le richieste all'API Spoonacular
+  const { apiKey } = useApiConfigStore();
+  
   // ========== STATI LOCALI ==========
-  // Stato per dati dettagliati della ricetta (dai endpoint /recipes/{id}/information)
-  // Inizialmente null, viene riempito dal fetch
+  // Dati completi della ricetta fetched dall'API /recipes/{id}/information
   const [fullRecipe, setFullRecipe] = useState<RecipeInterface | null>(null);
   
-  // Flag per mostrare uno stato di caricamento mentre fetcha i dettagli
-  const [loading, setLoading] = useState(false);
-  
-  // Stringa di errore se il fetch fallisce
-  const [error, setError] = useState<string | null>(null);
+  // Note: loading and error sono dichiarati ma non usati nel render.
+  // Vengono gestiti per completezza della logica di fetch, anche se il componente
+  // mostra un fallback (fallbackRecipe) se il fetch fallisce.
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
 
-  // API Key dal Zustand store
-  const { apiKey } = useApiConfigStore();
-
-  // ========== EFFETTO: FETCH DETTAGLI RICETTA ==========
-  // Quando il componente monta, fetcha i dettagli completi della ricetta
-  // 
-  // Flusso:
-  // 1. Se recipeData.id manca, esce (niente da fare)
-  // 2. Costruisce l'URL all'endpoint /recipes/{id}/information
-  // 3. Fa il fetch e parsea il JSON
-  // 4. Salva il risultato in fullRecipe
-  // 5. Se c'è un errore, lo salva in error
-  // 6. Il componente può essere smontato nel frattempo, quindi controlla cancelled
+  // ========== EFFETTO: FETCH DETTAGLI RICETTA (BASATO SU URL) ==========
+  /**
+   * useEffect con dipendenza su 'id' (dall'URL)
+   * 
+   * ROUTING E FETCH:
+   * - Quando il componente monta, id viene estratto dall'URL con useParams()
+   * - Esempio: /recipe/716429 → id = "716429"
+   * - Questo effetto fetcha i dettagli dall'endpoint /recipes/{id}/information
+   * - Ogni volta che l'id cambia (navigando a un'altra ricetta), rifà il fetch
+   * 
+   * FLUSSO:
+   * 1. Se id è undefined (non dovrebbe succedere), esce
+   * 2. Costruisce URL: baseUrl/recipes/{id}/information?apiKey=...
+   * 3. Fa fetch e parsea JSON
+   * 4. Salva in fullRecipe
+   * 5. Gestisce errori e loading
+   * 
+   * CLEANUP:
+   * - cancelled flag previene race condition se il componente smonta durante fetch
+   * 
+   * VECCHIO SISTEMA:
+   * - Prima l'id arrivava come prop e il fetch era fatto in App.tsx
+   * - Dati passati come prop recipeData
+   * 
+   * NUOVO SISTEMA:
+   * - id nell'URL → fetch locale nella pagina
+   * - Pagina completamente autoconsistente
+   * - URL-driven: cambia l'URL → cambia il fetch
+   */
   useEffect(() => {
     let cancelled = false;
     const fetchDetails = async () => {
-      if (!recipeData?.id) return;
+      if (!id) return;
       const baseUrl = import.meta.env.VITE_BASE_URL;
       // includeNutrition=false per risparmiare crediti API
-      const url = `${baseUrl}/recipes/${recipeData.id}/information?apiKey=${apiKey ?? ""}&includeNutrition=false`;
+      const url = `${baseUrl}/recipes/${id}/information?apiKey=${apiKey ?? ""}&includeNutrition=false`;
       try {
-        setLoading(true);
-        setError(null);
+        // setLoading(true);
+        // setError(null);
         const res = await fetch(url);
         if (!res.ok) {
-          setError(`Errore fetching details: ${res.status}`);
+          // setError(`Errore fetching details: ${res.status}`);
           return;
         }
         const json = await res.json();
         if (cancelled) return;
         setFullRecipe(json as RecipeInterface);
       } catch (err) {
-        if (!cancelled) setError((err as Error).message);
+        // if (!cancelled) setError((err as Error).message);
       } finally {
-        if (!cancelled) setLoading(false);
+        // if (!cancelled) setLoading(false);
       }
     }
 
     fetchDetails();
     return () => { cancelled = true }
-  }, [recipeData?.id, apiKey]);
+  }, [id, apiKey]);
 
   // ========== SELEZIONE DATI ==========
-  // Priorità: se fullRecipe (da fetch) esiste, usalo
-  // Se non esiste, usa recipeData (passato da parent)
-  // Se non esiste nemmeno quello, usa il fallback mock
+  // Usa fullRecipe (da fetch) se esiste
+  // Se non esiste, usa il fallback mock
   // Questo permette di mostrare qualcosa anche se il fetch fallisce
-  const recipe = fullRecipe ?? recipeData ?? fallbackRecipe;
+  const recipe = fullRecipe ?? fallbackRecipe;
 
   // ========== NORMALIZZAZIONE INGREDIENTI ==========
   // L'endpoint findByIngredients ritorna ingredienti in formato diverso:
@@ -201,13 +249,26 @@ export const RecipeDetails = ({ id, recipeData, goToBack}: RecipeDetailsProps) =
         </section>
       </div>
 
-      {/* SEZIONE 2: Bottone "Go Back" */}
-      {/* Questo rimane sempre visibile in basso (shrink-0) */}
-      {/* Al click, torna alla pagina discover-recipes mantenendo l'indice della ricetta */}
+      {/* SEZIONE 2: Bottone "Go Back" - Navigazione con React Router */}
+      {/* 
+        ROUTING:
+        - onClick chiama navigate('/discover') per tornare al carosello
+        - Questo è il pattern React Router: niente props callback
+        - L'utente ritrova le ricette salvate nello store
+        
+        VECCHIO SISTEMA:
+        - goToBack() prop function da App.tsx
+        - Faceva setPage('discoverRecipes')
+        
+        NUOVO SISTEMA:
+        - navigate('/discover') cambia URL e monta DiscoverRecipes
+        - Funziona con browser back/forward
+        - URL: /recipe/123 → /discover
+      */}
       <div className="w-full px-4 pb-4 pt-2 shrink-0 bg-gradient-to-t from-white to-transparent">
         <button
           type="button"
-          onClick={() => goToBack(id)}
+          onClick={() => navigate('/discover')}
           className="w-full py-3 text-base font-bold bg-purple-700 hover:bg-purple-800 active:bg-purple-900 transition-colors text-white rounded-2xl shadow-lg cursor-pointer"
           style={{ letterSpacing: "0.05em" }}
         >

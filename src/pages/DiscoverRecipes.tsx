@@ -1,26 +1,79 @@
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { RecipeCard } from "../components/card-components/RecipeCard"
 import { ScrollBtnSection } from "../components/scroll-btn/ScrollBtnSection"
+import { useRecipesStore } from "../store/recipesStore"
 import type { RecipeInterface } from "../types/recipes"
 
-type DiscoverRecipesProps = {
-
-  // Array di ricette da visualizzare nel carosello
-  recipes: RecipeInterface[]
-
-  // Callback richiamata quando l'utente clicca "Dettagli ricetta" su una carta
-  onRecipeDetailClick: (recipe: RecipeInterface) => void
-
-  // Callback richiamata quando l'utente clicca il logo per tornare alla homepage
-  goToHomepage:()=> void
-
-  // Indice della ricetta attualmente visualizzata nel carosello
-  currentIndex: number
+function DiscoverRecipes() {
+  // ========== ROUTING & NAVIGATION ==========
+  // useNavigate() - Hook di React Router per navigazione programmatica
+  // Permette di navigare tra le pagine senza props callback
+  // Sostituisce: onRecipeDetailClick e goToHomepage che erano passate come props
+  const navigate = useNavigate();
   
-  // Callback per aggiornare l'indice quando l'utente naviga tra le ricette
-  setCurrentIndex: (index: number) => void
-}
+  // ========== ZUSTAND STORE (SOSTITUZIONE PROPS) ==========
+  // useRecipesStore() - Legge le ricette dallo store globale
+  // Prima le ricette arrivavano come prop: recipes: RecipeInterface[]
+  // Ora le ricette sono state salvate in SearchPage con setRecipes()
+  // e vengono lette qui direttamente dallo store
+  const { recipes } = useRecipesStore();
+  
+  // ========== STATO LOCALE ==========
+  // currentIndex - Gestito come stato locale perché è specifico di questa pagina
+  // Indica quale ricetta del carosello è attualmente visibile (0, 1, 2, ...)
+  // Prima veniva passato come prop da App.tsx insieme a setCurrentIndex
+  // Ora è completamente interno alla pagina
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-function DiscoverRecipes({ currentIndex, recipes, onRecipeDetailClick, goToHomepage, setCurrentIndex }: DiscoverRecipesProps) {
+  // ========== HANDLERS ==========
+  // ========== HANDLERS DI NAVIGAZIONE ==========
+  
+  /**
+   * handleRecipeDetailClick - Naviga alla pagina di dettaglio
+   * @param recipe - Ricetta selezionata dall'utente
+   * 
+   * ROUTING:
+   * - Usa navigate() per passare a /recipe/:id
+   * - L'id viene inserito dinamicamente nell'URL
+   * - RecipeDetails leggerà l'id con useParams() dall'URL
+   * - Esempio: se recipe.id = 123 → naviga a /recipe/123
+   * 
+   * VECCHIO SISTEMA:
+   * - Prima si chiamava onRecipeDetailClick(recipe.id) passata come prop
+   * - App.tsx gestiva il cambio di pagina con setPage('recipeDetails')
+   * - L'id veniva salvato in uno stato e passato come prop
+   * 
+   * NUOVO SISTEMA:
+   * - L'id è nell'URL: /recipe/:id
+   * - RecipeDetails usa useParams() per leggerlo
+   * - Niente props, niente state management complesso
+   * - URL come unica fonte di verità
+   */
+  const handleRecipeDetailClick = (recipe: RecipeInterface) => {
+    navigate(`/recipe/${recipe.id}`);
+  };
+
+  /**
+   * goToHomepage - Torna alla pagina di ricerca ingredienti
+   * 
+   * ROUTING:
+   * - Usa navigate('/search') per tornare alla SearchPage
+   * - Mantiene gli ingredienti salvati nello store
+   * - L'utente può modificare la selezione e rifare la ricerca
+   * 
+   * VECCHIO SISTEMA:
+   * - Prima si chiamava goToHomepage() passata come prop
+   * - App.tsx faceva setPage('searchPage')
+   * 
+   * NUOVO SISTEMA:
+   * - navigate('/search') cambia URL e monta SearchPage
+   * - Gli ingredienti restano in recipesStore (non vengono persi)
+   * - Più intuitivo per l'utente (può usare anche il pulsante back del browser)
+   */
+  const goToHomepage = () => {
+    navigate('/search');
+  };
   // ========== COMPONENTE DISCOVER RECIPES ==========
   // Questo componente mostra un carosello di ricette
   // 
@@ -49,7 +102,9 @@ function DiscoverRecipes({ currentIndex, recipes, onRecipeDetailClick, goToHomep
           {/* RecipeCard: mostra titolo, tempo, ingredienti, immagine della ricetta */}
           {/* recipes[currentIndex] seleziona la ricetta in base all'indice corrente */}
           {/* onClickDetails è il callback quando l'utente clicca "View Details" */}
-          <RecipeCard recipe={recipes[currentIndex]} onClickDetails={onRecipeDetailClick} />
+          {recipes.length > 0 && (
+            <RecipeCard recipe={recipes[currentIndex]} onClickDetails={handleRecipeDetailClick} />
+          )}
         </div>
       </div>
 
